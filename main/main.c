@@ -22,7 +22,8 @@ bool button_on = false;
 
 static void wake_alarm_handler(void *user_data) {
     ESP_LOGI(TAG, "Wake up alarm triggered → fade to orange!");
-    neopixel_animations_fade_to(&strip, 255, 100, 0, 0, 750);
+    // neopixel_animations_fade_to(&strip, 255, 100, 0, 0, 2000);
+    neopixel_animations_start(&strip, NEOPIXEL_ANIM_BREATH, 0, 80, 255); // blue breathing while booting
 }
 
 static void timer_done(void *user) {
@@ -35,9 +36,10 @@ static void on_button_change(void *user) {
     // Treat any edge as a "press" event
     alarm_manager_cancel_timer(timer_id);
     ESP_LOGI("MAIN", "Button pressed! level=%d", button_manager_get_level());
+    neopixel_animations_stop(&strip);
     if (button_on == true)
     {
-        neopixel_animations_fade_to(&strip, 0, 32, 128, 0, 600); // 600ms to deep blue
+        neopixel_animations_fade_to(&strip, 255, 80, 40, 255, 1000);
         timer_id = alarm_manager_start_timer(15 * 60 * 1000, timer_done, NULL);
     } else {
         neopixel_animations_fade_to(&strip, 0, 0, 0, 0, 1000); // 600ms to deep blue
@@ -46,16 +48,15 @@ static void on_button_change(void *user) {
 
 static void on_pot_change(uint16_t raw, uint8_t pct, void *user) {
     // Map 0..100% → 0..255 cap
-    uint8_t cap = (uint8_t)((pct * 225U) / 100U) + 30;
+    uint8_t cap = (uint8_t)((pct * 240U) / 100U) + 15;
     neopixel_set_brightness_cap(cap);
-    // (Optional) brief visual cue: tiny blue pulse on change
-    // (keep it light; animations already run in their own task)
+    neopixel_show(&strip);            // <- force a resend so cap takes effect now
 }
 
 static void time_synced(void *user) {
     ESP_LOGI(TAG, "Time synced callback");
     // When time is synced, you might change LED state to solid green, etc.
-    neopixel_animations_fade_to(&strip, 255, 200, 120, 40, 2000);
+    neopixel_animations_fade_to(&strip, 255, 80, 40, 255, 1000);
     timer_id = alarm_manager_start_timer(15 * 60 * 1000, timer_done, NULL);
     if (timer_id >= 0) {
         ESP_LOGI(TAG, "Started 15-minute timer id=%d", timer_id);
@@ -104,6 +105,6 @@ void app_main(void) {
     // Alarms (persistent)
     alarm_manager_init();
     // Example: ensure one demo alarm exists at 12:00:00
-    alarm_time_t alarm = { .hour = 14, .minute = 00, .second = 0 };
+    alarm_time_t alarm = { .hour = 6, .minute = 45, .second = 0 };
     alarm_manager_set_alarm("wake_alarm", alarm, wake_alarm_handler, NULL);
 }
