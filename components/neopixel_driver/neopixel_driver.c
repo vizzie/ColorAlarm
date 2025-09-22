@@ -71,6 +71,15 @@ void neopixel_init(neopixel_t *strip, int pin, int count, neopixel_order_t order
     ESP_LOGI(TAG, "Init on GPIO %d, LEDs=%d, %s", pin, count, strip->use_rgbw ? "RGBW" : "RGB");
 }
 
+static uint8_t s_brightness_cap = 255; // default off
+static inline uint8_t apply_cap(uint8_t v) {
+    // v * cap / 255
+    return (uint8_t)((v * (uint16_t)s_brightness_cap) / 255U);
+}
+void neopixel_set_brightness_cap(uint8_t cap) { s_brightness_cap = cap; }
+uint8_t neopixel_get_brightness_cap(void) { return s_brightness_cap; }
+
+
 void neopixel_set_pixel(neopixel_t *strip, int i, uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
     if (!strip || !strip->pixels) return;
     if (i < 0 || i >= strip->count) return;
@@ -113,8 +122,15 @@ void neopixel_show(neopixel_t *strip) {
     size_t k = 0;
     for (int i = 0; i < strip->count; i++) {
         uint8_t *p = &strip->pixels[i*bpp];
+        // GRB(W) order; apply cap
+        uint8_t g = apply_cap(p[0]);
+        uint8_t r = apply_cap(p[1]);
+        uint8_t b = apply_cap(p[2]);
+        uint8_t w = strip->use_rgbw ? apply_cap(p[3]) : 0;
+
+        uint8_t bytes[4] = { g, r, b, w };
         for (int j = 0; j < bpp; j++) {
-            uint8_t byte = p[j];
+            uint8_t byte = bytes[j];
             for (int bit = 7; bit >= 0; bit--) {
                 bool one = (byte >> bit) & 0x01;
                 s_rmt.items[k++] = one ? b1 : b0;
