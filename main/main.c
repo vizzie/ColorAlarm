@@ -25,11 +25,13 @@ static void wake_alarm_handler(void *user_data) {
     // neopixel_animations_fade_to(&strip, 255, 100, 0, 0, 2000);
     neopixel_set_brightness_cap(255);
     neopixel_animations_start(&strip, NEOPIXEL_ANIM_BREATH, 0, 80, 255); // blue breathing while booting
+    button_on = true;
 }
 
 static void timer_done(void *user) {
     // Cross-fade to warm white over 2 seconds
     neopixel_animations_fade_to(&strip, 0, 0, 0, 0, 3000);
+    button_on = false;
 }
 
 static void on_button_change(void *user) {
@@ -58,6 +60,7 @@ static void time_synced(void *user) {
     ESP_LOGI(TAG, "Time synced callback");
     // When time is synced, you might change LED state to solid green, etc.
     neopixel_animations_fade_to(&strip, 0, 0, 0, 0, 3000);
+    button_on = false;
     timer_id = alarm_manager_start_timer(15 * 60 * 1000, timer_done, NULL);
     if (timer_id >= 0) {
         ESP_LOGI(TAG, "Started 15-minute timer id=%d", timer_id);
