@@ -19,6 +19,7 @@ static neopixel_t strip;
 
 int timer_id = -1;
 bool button_on = false;
+uint8_t brightness = 255;
 
 static void wake_alarm_handler(void *user_data) {
     ESP_LOGI(TAG, "Wake up alarm triggered → fade to orange!");
@@ -40,6 +41,7 @@ static void on_button_change(void *user) {
     alarm_manager_cancel_timer(timer_id);
     ESP_LOGI("MAIN", "Button pressed! level=%d", button_manager_get_level());
     neopixel_animations_stop(&strip);
+    neopixel_set_brightness_cap(brightness);
     if (button_on == true)
     {
         neopixel_animations_fade_to(&strip, 255, 80, 40, 255, 2000);
@@ -51,8 +53,8 @@ static void on_button_change(void *user) {
 
 static void on_pot_change(uint16_t raw, uint8_t pct, void *user) {
     // Map 0..100% → 0..255 cap
-    uint8_t cap = (uint8_t)((pct * 240U) / 100U) + 15;
-    neopixel_set_brightness_cap(cap);
+    brightness = (uint8_t)((pct * 240U) / 100U) + 15;
+    neopixel_set_brightness_cap(brightness);
     neopixel_show(&strip);            // <- force a resend so cap takes effect now
 }
 
