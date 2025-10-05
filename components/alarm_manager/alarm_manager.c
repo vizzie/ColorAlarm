@@ -26,7 +26,7 @@ static duration_timer_t s_timers[MAX_DURATION_TIMERS];
 
 typedef struct {
     char id[16];
-    int hour, minute, second;
+    int day, hour, minute, second;
     bool active;
 } alarm_persist_t;
 
@@ -44,6 +44,7 @@ static void alarm_save_nvs(void) {
     alarm_persist_t persist[MAX_ALARMS] = {0};
     for (int i = 0; i < MAX_ALARMS; i++) {
         strncpy(persist[i].id, s_alarms[i].id, sizeof(persist[i].id)-1);
+        persist[i].day = s_alarms[i].time.day;
         persist[i].hour = s_alarms[i].time.hour;
         persist[i].minute = s_alarms[i].time.minute;
         persist[i].second = s_alarms[i].time.second;
@@ -60,6 +61,7 @@ static void alarm_load_nvs(void) {
         if (count > MAX_ALARMS) count = MAX_ALARMS;
         for (int i = 0; i < count; i++) {
             strncpy(s_alarms[i].id, persist[i].id, sizeof(s_alarms[i].id)-1);
+            s_alarms[i].time.day = persist[i].day;
             s_alarms[i].time.hour = persist[i].hour;
             s_alarms[i].time.minute = persist[i].minute;
             s_alarms[i].time.second = persist[i].second;
@@ -76,6 +78,7 @@ static void alarm_task(void *arg) {
         if (time_manager_get_local_time(&now)) {
             for (int i = 0; i < MAX_ALARMS; i++) {
                 if (s_alarms[i].active &&
+                    s_alarms[i].time.day == now.tm_wday &&
                     s_alarms[i].time.hour == now.tm_hour &&
                     s_alarms[i].time.minute == now.tm_min &&
                     s_alarms[i].time.second == now.tm_sec) {
