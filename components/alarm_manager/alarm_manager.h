@@ -5,6 +5,7 @@
 typedef void (*alarm_callback_t)(void *user_data);
 
 typedef struct {
+    int day; // 0=Sunday
     int hour;
     int minute;
     int second;

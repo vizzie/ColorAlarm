@@ -19,13 +19,13 @@ static neopixel_t strip;
 
 int timer_id = -1;
 bool button_on = false;
-uint8_t brightness = 255;
+uint8_t g_brightness = 255;
 
 static void wake_alarm_handler(void *user_data) {
-    ESP_LOGI(TAG, "Wake up alarm triggered → fade to orange!");
+    ESP_LOGI(TAG, "Wake up alarm triggered → fade to blue breathing!");
     // neopixel_animations_fade_to(&strip, 255, 100, 0, 0, 2000);
     neopixel_set_brightness_cap(255);
-    neopixel_animations_start(&strip, NEOPIXEL_ANIM_BREATH, 0, 80, 255); // blue breathing while booting
+    neopixel_animations_start(&strip, NEOPIXEL_ANIM_BREATH, 0, 80, 255); // blue breathing
     button_on = true;
 }
 
@@ -41,7 +41,7 @@ static void on_button_change(void *user) {
     alarm_manager_cancel_timer(timer_id);
     ESP_LOGI("MAIN", "Button pressed! level=%d", button_manager_get_level());
     neopixel_animations_stop(&strip);
-    neopixel_set_brightness_cap(brightness);
+    neopixel_set_brightness_cap(g_brightness);
     if (button_on == true)
     {
         neopixel_animations_fade_to(&strip, 255, 80, 40, 255, 2000);
@@ -53,8 +53,8 @@ static void on_button_change(void *user) {
 
 static void on_pot_change(uint16_t raw, uint8_t pct, void *user) {
     // Map 0..100% → 0..255 cap
-    brightness = (uint8_t)((pct * 240U) / 100U) + 15;
-    neopixel_set_brightness_cap(brightness);
+    g_brightness = (uint8_t)((pct * 240U) / 100U) + 15;
+    neopixel_set_brightness_cap(g_brightness);
     neopixel_show(&strip);            // <- force a resend so cap takes effect now
 }
 
@@ -99,6 +99,8 @@ void app_main(void) {
     // Potentiometer
     pot_manager_init(POT_CH, 50, on_pot_change, NULL); // 50ms polling, notify on ~2% delta
 
+    g_brightness = pot_manager_get_percent();
+
     // LEDs
     neopixel_init(&strip, LED_PIN, LED_COUNT, NEOPIXEL_ORDER_GRBW);
     neopixel_fill(&strip, 0, 0, 10, 0);
@@ -110,7 +112,20 @@ void app_main(void) {
 
     // Alarms (persistent)
     alarm_manager_init();
-    // Example: ensure one demo alarm exists at 12:00:00
-    alarm_time_t alarm = { .hour = 6, .minute = 45, .second = 0 };
-    alarm_manager_set_alarm("wake_alarm", alarm, wake_alarm_handler, NULL);
+
+    alarm_time_t weekend_alarm = { .day = 0, .hour = 7, .minute = 30, .second = 0 };
+    alarm_manager_set_alarm("sunday", weekend_alarm, wake_alarm_handler, NULL);
+    weekend_alarm.day = 6;
+    alarm_manager_set_alarm("saturday", weekend_alarm, wake_alarm_handler, NULL);
+
+    alarm_time_t weekday_alarm = { .day = 1, .hour = 6, .minute = 45, .second = 0 };
+    alarm_manager_set_alarm("monday", weekday_alarm, wake_alarm_handler, NULL);
+    weekday_alarm.day = 2;
+    alarm_manager_set_alarm("tuesday", weekday_alarm, wake_alarm_handler, NULL);
+    weekday_alarm.day = 3;
+    alarm_manager_set_alarm("wednesday", weekday_alarm, wake_alarm_handler, NULL);
+    weekday_alarm.day = 4;
+    alarm_manager_set_alarm("thursday", weekday_alarm, wake_alarm_handler, NULL);
+    weekday_alarm.day = 5;
+    alarm_manager_set_alarm("friday", weekday_alarm, wake_alarm_handler, NULL);
 }
