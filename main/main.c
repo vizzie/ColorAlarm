@@ -45,8 +45,7 @@ static void on_button_change(void *user) {
     neopixel_set_brightness_cap(g_brightness);
     if (button_on == true)
     {
-        // neopixel_animations_fade_to(&strip, 255, 80, 40, 255, 2000);
-neopixel_animations_rainbow_smooth_start(&strip, 10000, false, 255, 255);
+        neopixel_animations_fade_to(&strip, 255, 80, 40, 255, 2000);
         timer_id = alarm_manager_start_timer(15 * 60 * 1000, timer_done, NULL);
     } else {
         neopixel_animations_fade_to(&strip, 0, 0, 0, 0, 3000); // fade to black
