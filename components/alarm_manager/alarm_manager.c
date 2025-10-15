@@ -77,6 +77,10 @@ static void alarm_task(void *arg) {
         struct tm now;
         if (time_manager_get_local_time(&now)) {
             for (int i = 0; i < MAX_ALARMS; i++) {
+                // if (s_alarms[i].active)
+                // {
+                //     ESP_LOGI("alarm", "checking alarm D=%d H=%d M=%d S=%d", s_alarms[i].time.day, s_alarms[i].time.hour, s_alarms[i].time.minute, s_alarms[i].time.second);
+                // }
                 if (s_alarms[i].active &&
                     s_alarms[i].time.day == now.tm_wday &&
                     s_alarms[i].time.hour == now.tm_hour &&
