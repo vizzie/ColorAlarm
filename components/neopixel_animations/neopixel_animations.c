@@ -10,11 +10,38 @@ static neopixel_anim_mode_t s_mode = NEOPIXEL_ANIM_NONE;
 static TaskHandle_t s_task = NULL;
 static uint8_t s_r=0, s_g=0, s_b=0;
 
-// ===== NEW: fade-to-solid state =====
+// ===== fade-to-solid state =====
 static uint8_t *s_fade_start = NULL;     // snapshot of starting pixels (GRB/GRBW)
 static uint8_t  s_target_r=0, s_target_g=0, s_target_b=0, s_target_w=0;
 static uint32_t s_fade_duration_ms = 0;
 static uint32_t s_fade_elapsed_ms = 0;
+
+// ===== Smooth Rainbow state =====
+static uint32_t s_rainbow_speed_ms = 6000;  // full hue cycle duration
+static bool     s_rainbow_gradient = true;  // gradient along strip or uniform
+static uint8_t  s_rainbow_sat = 255;        // saturation 0..255
+static uint8_t  s_rainbow_val = 255;        // value/brightness 0..255
+
+/* HSV (0..360,0..255,0..255) -> RGB (0..255)
+   Simple and branchy but compact; W channel stays 0 (driver cap still applies). */
+static void hsv_to_rgb(float H, uint8_t S, uint8_t V, uint8_t *r, uint8_t *g, uint8_t *b) {
+    if (S == 0) { *r = *g = *b = V; return; }
+    float s = S / 255.0f, v = V / 255.0f;
+    float C = s * v;
+    float Hp = fmodf(H / 60.0f, 6.0f);
+    float X = C * (1.0f - fabsf(fmodf(Hp, 2.0f) - 1.0f));
+    float r1=0, g1=0, b1=0;
+    if      (0.0f <= Hp && Hp < 1.0f) { r1=C; g1=X; b1=0; }
+    else if (1.0f <= Hp && Hp < 2.0f) { r1=X; g1=C; b1=0; }
+    else if (2.0f <= Hp && Hp < 3.0f) { r1=0; g1=C; b1=X; }
+    else if (3.0f <= Hp && Hp < 4.0f) { r1=0; g1=X; b1=C; }
+    else if (4.0f <= Hp && Hp < 5.0f) { r1=X; g1=0; b1=C; }
+    else                               { r1=C; g1=0; b1=X; }
+    float m = v - C;
+    *r = (uint8_t)((r1 + m) * 255.0f);
+    *g = (uint8_t)((g1 + m) * 255.0f);
+    *b = (uint8_t)((b1 + m) * 255.0f);
+}
 
 static void free_fade_buf(void) {
     if (s_fade_start) { vPortFree(s_fade_start); s_fade_start = NULL; }
@@ -62,15 +89,18 @@ static void anim_task(void *arg) {
                 break;
             }
             case NEOPIXEL_ANIM_RAINBOW: {
+                // uint8_t r = (uint8_t)((t/10) % 255);
+                // uint8_t g = (uint8_t)((t/30) % 255);
+                // uint8_t b = (uint8_t)((t/50) % 255);
+                uint8_t r = (uint8_t)((t/10) % 255);
+                uint8_t g = (uint8_t)(((t/10) + 64) % 255);
+                uint8_t b = (uint8_t)(((t/10) + 128) % 255);
                 for (int i=0;i<s_strip->count;i++) {
-                    uint8_t r = (uint8_t)((i*23 + t/10) % 255);
-                    uint8_t g = (uint8_t)((i*47 + t/15) % 255);
-                    uint8_t b = (uint8_t)((i*89 + t/20) % 255);
                     neopixel_set_pixel(s_strip,i,r,g,b,0);
                 }
                 neopixel_show(s_strip);
-                vTaskDelay(pdMS_TO_TICKS(50));
-                t += 5;
+                vTaskDelay(pdMS_TO_TICKS(20));
+                t += 15;
                 break;
             }
             case NEOPIXEL_ANIM_FADE_TO_SOLID: {
@@ -112,6 +142,34 @@ static void anim_task(void *arg) {
                 }
                 break;
             }
+
+            case NEOPIXEL_ANIM_RAINBOW_SMOOTH: {
+                // u = 0..1 over cycle
+                float u = (s_rainbow_speed_ms == 0) ? 0.0f : ((t % s_rainbow_speed_ms) / (float)s_rainbow_speed_ms);
+                float base_h = u * 360.0f;  // degrees
+
+                if (s_rainbow_gradient && s_strip->count > 1) {
+                    for (int i = 0; i < s_strip->count; i++) {
+                        float h = base_h + (360.0f * ((float)i / (float)s_strip->count));
+                        if (h >= 360.0f) h -= 360.0f;
+                        uint8_t rr, gg, bb;
+                        hsv_to_rgb(h, s_rainbow_sat, s_rainbow_val, &rr, &gg, &bb);
+                        neopixel_set_pixel(s_strip, i, rr, gg, bb, 0);
+                    }
+                } else {
+                    uint8_t rr, gg, bb;
+                    hsv_to_rgb(base_h, s_rainbow_sat, s_rainbow_val, &rr, &gg, &bb);
+                    for (int i = 0; i < s_strip->count; i++) {
+                        neopixel_set_pixel(s_strip, i, rr, gg, bb, 0);
+                    }
+                }
+
+                neopixel_show(s_strip);
+                vTaskDelay(tick_20ms);
+                t += 20;
+                break;
+            }
+
             default: {
                 vTaskDelay(pdMS_TO_TICKS(100));
                 break;
@@ -142,4 +200,18 @@ void neopixel_animations_fade_to(neopixel_t *strip,
     if (!s_task) xTaskCreate(anim_task,"anim_task",4096,NULL,5,&s_task);
     begin_fade_snapshot(r, g, b, w, duration_ms);
     s_mode = NEOPIXEL_ANIM_FADE_TO_SOLID;
+}
+
+void neopixel_animations_rainbow_smooth_start(neopixel_t *strip,
+                                              uint32_t speed_ms_per_cycle,
+                                              bool gradient,
+                                              uint8_t saturation,
+                                              uint8_t value) {
+    s_strip = strip;
+    if (!s_task) xTaskCreate(anim_task, "anim_task", 4096, NULL, 5, &s_task);
+    s_rainbow_speed_ms = (speed_ms_per_cycle == 0) ? 6000 : speed_ms_per_cycle;
+    s_rainbow_gradient = gradient;
+    s_rainbow_sat = saturation;
+    s_rainbow_val = value;
+    s_mode = NEOPIXEL_ANIM_RAINBOW_SMOOTH;
 }
