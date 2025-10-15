@@ -40,7 +40,7 @@ static void on_button_change(void *user) {
     button_on = !button_on;
     // Treat any edge as a "press" event
     alarm_manager_cancel_timer(timer_id);
-    ESP_LOGI("MAIN", "Button pressed! level=%d, button_manager_get_level());
+    ESP_LOGI("MAIN", "Button pressed! level=%d", button_manager_get_level());
     neopixel_animations_stop(&strip);
     neopixel_set_brightness_cap(g_brightness);
     if (button_on == true)

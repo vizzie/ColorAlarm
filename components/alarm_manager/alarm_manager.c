@@ -96,7 +96,7 @@ static void alarm_task(void *arg) {
 
 void alarm_manager_init(void) {
     memset(s_alarms, 0, sizeof(s_alarms));
-    alarm_load_nvs();
+    //alarm_load_nvs(); // dont need to load from nvs as alarms are set on boot
 
     /* init duration timers table */
     memset(s_timers, 0, sizeof(s_timers));
@@ -113,7 +113,7 @@ bool alarm_manager_set_alarm(const char *id, alarm_time_t time,
             s_alarms[i].cb = cb;
             s_alarms[i].user_data = user_data;
             s_alarms[i].active = true;
-            alarm_save_nvs();
+            //alarm_save_nvs(); //no need to store as alarms are set on boot up
             return true;
         }
     }
