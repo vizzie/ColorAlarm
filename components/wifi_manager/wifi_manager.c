@@ -135,3 +135,9 @@ void wifi_manager_init(wifi_manager_cb_t cb, void *user_data) {
         start_captive_portal();
     }
 }
+
+void wifi_disconnect(void) {
+    ESP_LOGI(TAG, "Attempting to disconnect wifi");
+    esp_err_t err = esp_wifi_disconnect();
+    ESP_LOGI(TAG, "Wifi disconnect %s", err == ESP_OK ? "success" : "failed");
+}

@@ -45,7 +45,7 @@ static void on_button_change(void *user) {
     neopixel_set_brightness_cap(g_brightness);
     if (button_on == true)
     {
-        neopixel_animations_fade_to(&strip, 255, 80, 40, 255, 2000);
+        neopixel_animations_fade_to(&strip, 0, 0, 0, 255, 2000);
         timer_id = alarm_manager_start_timer(15 * 60 * 1000, timer_done, NULL);
     } else {
         neopixel_animations_fade_to(&strip, 0, 0, 0, 0, 3000); // fade to black
@@ -55,6 +55,7 @@ static void on_button_change(void *user) {
 static void on_pot_change(uint16_t raw, uint8_t pct, void *user) {
     // Map 0..100% → 0..255 cap
     g_brightness = (uint8_t)((pct * 240U) / 100U) + 15;
+    ESP_LOGI(TAG, "brightness set to %d", g_brightness);
     neopixel_set_brightness_cap(g_brightness);
     neopixel_show(&strip);            // <- force a resend so cap takes effect now
 }
@@ -131,4 +132,5 @@ void app_main(void) {
     alarm_manager_set_alarm("thursday", weekday_alarm, wake_alarm_handler, NULL);
     weekday_alarm.day = 5;
     alarm_manager_set_alarm("friday", weekday_alarm, wake_alarm_handler, NULL);
+    ESP_LOGI(TAG, "Alarms set.");
 }
