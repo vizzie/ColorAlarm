@@ -55,7 +55,6 @@ static void on_button_change(void *user) {
 static void on_pot_change(uint16_t raw, uint8_t pct, void *user) {
     // Map 0..100% → 0..255 cap
     g_brightness = (uint8_t)((pct * 240U) / 100U) + 15;
-    ESP_LOGI(TAG, "brightness set to %d", g_brightness);
     neopixel_set_brightness_cap(g_brightness);
     neopixel_show(&strip);            // <- force a resend so cap takes effect now
 }
@@ -113,6 +112,9 @@ void app_main(void) {
 
     // WiFi (loads saved creds or starts captive portal)
     wifi_manager_init(wifi_event_handler, NULL);
+
+    // wait for the time to be synced before setting the alarms to avoid alarms going off at the wrong time
+    while (time_manager_ready == false) vTaskDelay(10);
 
     // Alarms (persistent)
     alarm_manager_init();
