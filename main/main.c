@@ -19,7 +19,7 @@ static neopixel_t strip;
 int timer_id = -1;
 bool button_on = false;
 uint8_t g_brightness = 100;
-uint8_t g_brightnessCap = 40;
+uint8_t g_brightnessCap = 100;
 
 bool time_manager_ready = false;
 
@@ -53,7 +53,7 @@ static void on_button_change(void *user) {
 }
 
 static void on_pot_change(uint16_t raw, uint8_t pct, void *user) {
-    g_brightness = (uint8_t)((pct * 240U) / 100U) + 15;
+    g_brightness = (uint8_t)((pct * g_brightnessCap) / 100U) + 15;
     neopixel_set_brightness_cap(g_brightness);
     neopixel_show(&strip);
 }

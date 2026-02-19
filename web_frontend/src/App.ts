@@ -49,7 +49,7 @@ export const App: m.Component = {
     return m("main.page", [
       m("section.hero", [
         m("h1", "ColorAlarm"),
-        m("p", "Manage alarms over REST, then run the same UI against mock data during local development.")
+        m("p", "A Color Clock inside an IKEA lamp!")
       ]),
 
       state.error ? m("div.error", state.error) : null,
