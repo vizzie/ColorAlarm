@@ -1,0 +1,10 @@
+import m from 'mithril';
+import { IAttrs, ISizeAttrs } from '../../_shared';
+export interface IMenuAttrs extends IAttrs, ISizeAttrs {
+    /** Toggles basic styling (no border)  */
+    basic?: boolean;
+    [htmlAttrs: string]: any;
+}
+export declare class Menu implements m.Component<IMenuAttrs> {
+    view({ attrs, children }: m.Vnode<IMenuAttrs>): m.Vnode<any, any>;
+}

@@ -1,0 +1,7 @@
+export var Intent = {
+    NONE: 'none',
+    PRIMARY: 'primary',
+    NEGATIVE: 'negative',
+    POSITIVE: 'positive',
+    WARNING: 'warning'
+};

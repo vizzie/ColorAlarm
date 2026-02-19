@@ -1,0 +1,7 @@
+import m from 'mithril';
+import { IAttrs, ISizeAttrs } from '../../_shared';
+export interface IMenuHeadingAttrs extends IAttrs, ISizeAttrs {
+}
+export declare class MenuHeading implements m.Component<IMenuHeadingAttrs> {
+    view({ attrs, children }: m.Vnode<IMenuHeadingAttrs>): m.Vnode<any, any>;
+}

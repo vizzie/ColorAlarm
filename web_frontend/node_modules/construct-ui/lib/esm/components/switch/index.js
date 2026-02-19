@@ -1,0 +1,14 @@
+import { __assign } from "tslib";
+import m from 'mithril';
+import { Classes } from '../../_shared';
+import { BaseControl } from '../base-control';
+var Switch = /** @class */ (function () {
+    function Switch() {
+    }
+    Switch.prototype.view = function (_a) {
+        var attrs = _a.attrs;
+        return m(BaseControl, __assign(__assign({}, attrs), { type: 'checkbox', typeClass: Classes.SWITCH }));
+    };
+    return Switch;
+}());
+export { Switch };

@@ -1,0 +1,31 @@
+import m from 'mithril';
+import { IAttrs, ISizeAttrs } from '../..';
+import { IPopoverAttrs, PopoverPosition } from '../popover';
+export interface ITooltipAttrs extends IAttrs, ISizeAttrs {
+    /** Inner content */
+    content?: m.Children;
+    /** Content to trigger tooltip */
+    trigger?: m.Child;
+    /**
+     * Position of content relative to trigger
+     * @default 'auto'
+     */
+    position?: PopoverPosition;
+    /**
+     * Displays an arrow pointing to trigger
+     * @default true
+     */
+    hasArrow?: boolean;
+    /** Duration of close delay on hover interaction */
+    hoverCloseDelay?: number;
+    /** Duration of open delay on hover interaction */
+    hoverOpenDelay?: number;
+    /**
+     * Transition duration
+     * @default 300
+     */
+    transitionDuration?: number;
+}
+export declare class Tooltip implements m.Component<ITooltipAttrs> {
+    view({ attrs }: m.Vnode<ITooltipAttrs>): m.Vnode<IPopoverAttrs, unknown>;
+}

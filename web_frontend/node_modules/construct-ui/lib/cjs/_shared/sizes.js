@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Size = void 0;
+exports.Size = {
+    XS: 'xs',
+    SM: 'sm',
+    DEFAULT: 'default',
+    LG: 'lg',
+    XL: 'xl'
+};

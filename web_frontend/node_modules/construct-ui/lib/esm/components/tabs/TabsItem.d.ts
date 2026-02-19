@@ -1,0 +1,14 @@
+import m from 'mithril';
+import { IAttrs } from '../../_shared';
+export interface ITabItemAttrs extends IAttrs {
+    /** Toggles active state */
+    active?: boolean;
+    /** Inner text or children */
+    label: m.Children;
+    /** Toggles loading animation */
+    loading?: boolean;
+    [htmlAttrs: string]: any;
+}
+export declare class TabItem implements m.ClassComponent<ITabItemAttrs> {
+    view({ attrs }: m.Vnode<ITabItemAttrs>): m.Vnode<any, any>;
+}

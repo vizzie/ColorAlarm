@@ -1,0 +1,43 @@
+import m from 'mithril';
+import { AbstractComponent } from '../abstract-component';
+import { IAttrs, ISizeAttrs, Option } from '../../_shared';
+import { IButtonAttrs } from '../button';
+export interface ICustomSelectAttrs extends IAttrs, ISizeAttrs {
+    /** Initially selected value (uncontrolled mode) */
+    defaultValue?: string | number;
+    /**
+     * Array of list options
+     * @default []
+     */
+    options: Option[];
+    /** Value of the selected option */
+    value?: string | number;
+    /** Callback invoked when selection changes */
+    onSelect?: (option: Option) => void;
+    /** Testing  */
+    itemRender?: (item: Option, isSelected: boolean, index: number) => m.Vnode<any, any>;
+    /**
+     * Attrs passed through to trigger
+     * @default {}
+     */
+    triggerAttrs?: IButtonAttrs;
+    /** Name attr of hidden input (useful for HTML forms) */
+    name?: string;
+}
+export declare class CustomSelect extends AbstractComponent<ICustomSelectAttrs> {
+    private activeIndex;
+    private selected?;
+    private isOpen;
+    getDefaultAttrs(): ICustomSelectAttrs;
+    oninit(vnode: m.Vnode<ICustomSelectAttrs>): void;
+    onbeforeupdate(vnode: m.Vnode<ICustomSelectAttrs>, old: m.VnodeDOM<ICustomSelectAttrs>): void;
+    view(): m.Vnode<any, any>;
+    private renderItem;
+    private handleSelect;
+    private handleActiveItemChange;
+    private handleTriggerKeyDown;
+    private handlePopoverInteraction;
+    private get selectedValue();
+    private get selectedLabel();
+    private setSelected;
+}

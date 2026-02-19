@@ -1,0 +1,11 @@
+import m from 'mithril';
+import { IAttrs, ISizeAttrs } from '../../_shared';
+export interface IBreadcrumbAttrs extends IAttrs, ISizeAttrs {
+    /** Element to display in between breadcrumb items */
+    seperator?: m.Child;
+    [htmlAttrs: string]: any;
+}
+export declare class Breadcrumb implements m.Component<IBreadcrumbAttrs> {
+    view({ attrs, children }: m.Vnode<IBreadcrumbAttrs>): m.Vnode<any, any>;
+    private renderChildren;
+}

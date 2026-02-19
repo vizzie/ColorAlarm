@@ -1,0 +1,10 @@
+declare class FocusManager {
+    /** Focus outline is shown only when tabbing through elements */
+    showFocusOnlyOnTab(): void;
+    /** Focus outline is always shown (mouse click and tab) */
+    alwaysShowFocus(): void;
+    private handleMouseDown;
+    private handleKeyDown;
+}
+declare const _default: FocusManager;
+export default _default;

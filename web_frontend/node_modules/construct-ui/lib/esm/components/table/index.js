@@ -1,0 +1,15 @@
+import { __assign, __rest } from "tslib";
+import classnames from 'classnames';
+import m from 'mithril';
+import { Classes } from '../../_shared';
+var Table = /** @class */ (function () {
+    function Table() {
+    }
+    Table.prototype.view = function (_a) {
+        var attrs = _a.attrs, children = _a.children;
+        var className = attrs.class, bordered = attrs.bordered, interactive = attrs.interactive, striped = attrs.striped, htmlAttrs = __rest(attrs, ["class", "bordered", "interactive", "striped"]);
+        return m('table', __assign(__assign({}, htmlAttrs), { class: classnames(Classes.TABLE, bordered && Classes.TABLE_BORDERED, striped && Classes.TABLE_STRIPED, interactive && Classes.TABLE_INTERACTIVE, className) }), children);
+    };
+    return Table;
+}());
+export { Table };

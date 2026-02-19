@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Intent = void 0;
+exports.Intent = {
+    NONE: 'none',
+    PRIMARY: 'primary',
+    NEGATIVE: 'negative',
+    POSITIVE: 'positive',
+    WARNING: 'warning'
+};

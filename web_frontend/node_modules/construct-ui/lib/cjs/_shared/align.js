@@ -1,0 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Align = void 0;
+exports.Align = {
+    LEFT: 'left',
+    CENTER: 'center',
+    RIGHT: 'right'
+};

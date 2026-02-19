@@ -1,0 +1,12 @@
+export declare const Keys: {
+    TAB: number;
+    ENTER: number;
+    SHIFT: number;
+    ESCAPE: number;
+    SPACE: number;
+    ARROW_LEFT: number;
+    ARROW_UP: number;
+    ARROW_RIGHT: number;
+    ARROW_DOWN: number;
+};
+export declare type Keys = typeof Keys[keyof typeof Keys];

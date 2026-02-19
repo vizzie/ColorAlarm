@@ -27,6 +27,7 @@ The system can trigger LED animations at configured alarms or timers, with brigh
 
 - **Alarm Manager**
   - Supports daily alarms at specified times
+  - Per-alarm enabled/disabled state
   - Alarms persist across reboots via NVS
   - One-shot timers (e.g., “run in 15 minutes”) supported
   - Alarms trigger LED animations or user callbacks
@@ -81,9 +82,38 @@ idf.py set-target esp32
 idf.py build flash monitor
 ```
 
+### Build Embedded Web UI (SPIFFS)
+The firmware serves the SPA from a `spiffs` partition when connected to Wi-Fi.
+
+1. Build frontend assets:
+```bash
+cd web_frontend
+npm install
+npm run build
+```
+2. Build + flash firmware (includes SPIFFS image via CMake):
+```bash
+cd ..
+idf.py build flash monitor
+```
+
+### Quick Copy-Paste Flow (Frontend + Firmware)
+From the project root, run:
+
+```bash
+cd web_frontend && npm install && npm run build && cd .. && . $IDF_PATH/export.sh && idf.py build flash monitor
+```
+
+This does all of the following:
+- builds `web_frontend/dist`
+- packages it into `build/spiffs.bin`
+- flashes bootloader/partition table/app/SPIFFS image
+
 On first boot, if no Wi-Fi credentials are found:
 - The ESP32 starts an AP called `ESP32_Config`
 - Connect and visit [http://192.168.4.1](http://192.168.4.1) to enter SSID & password
+
+Alarm settings are now loaded from flash storage, not hard-coded at boot.
 
 ---
 
@@ -93,7 +123,7 @@ On first boot, if no Wi-Fi credentials are found:
   - LEDs show a connecting animation
   - Device connects to Wi-Fi and syncs time
 - Alarm:
-  - At configured time (e.g., 12:00:00), LEDs cross-fade into a chosen animation
+  - At configured and enabled time (e.g., 12:00:00), LEDs cross-fade into a chosen animation
 - Button:
   - Each press triggers a callback (e.g., start a 15-minute one-shot timer)
 - Potentiometer:
@@ -115,7 +145,39 @@ components/
   └── pot_manager/         # ADC potentiometer → brightness cap
 main/
   └── main.c               # Application wiring everything together
+web_frontend/
+  ├── src/                 # Mithril SPA
+  └── mock-server/         # Local mock REST API for frontend testing
 ```
+
+## Alarm REST API
+
+The device exposes a REST API on port 80:
+
+- `GET /api/alarms`
+- `POST /api/alarms`
+- `PUT /api/alarms/:id`
+- `DELETE /api/alarms/:id`
+- `GET /api/vacation-mode`
+- `PUT /api/vacation-mode`
+
+Alarm payload:
+
+```json
+{
+  "id": "weekday",
+  "day": 1,
+  "hour": 6,
+  "minute": 45,
+  "second": 0,
+  "enabled": true
+}
+```
+
+The HTTP server is implemented in `components/wifi_manager/wifi_manager.c`. It serves:
+- Wi-Fi setup page on `/` when not connected
+- SPA static files from SPIFFS on `/` and `/*` when connected
+- REST API on `/api/*`
 
 ---
 

@@ -1,0 +1,20 @@
+import m from 'mithril';
+import { IAttrs } from '../../_shared';
+import { IconName } from '../icon';
+export interface IEmptyStateAttrs extends IAttrs {
+    /** Icon name */
+    icon?: IconName | m.Children;
+    /** Header content */
+    header?: m.Children;
+    /** Main content */
+    content?: m.Children;
+    /**
+     * Fills the height/width of parent container
+     * @default true
+     */
+    fill?: boolean;
+    [htmlAttrs: string]: any;
+}
+export declare class EmptyState implements m.Component<IEmptyStateAttrs> {
+    view({ attrs }: m.Vnode<IEmptyStateAttrs>): m.Vnode<any, any>;
+}

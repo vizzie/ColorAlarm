@@ -1,0 +1,42 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = require("tslib");
+var mithril_1 = tslib_1.__importDefault(require("mithril"));
+var _shared_1 = require("../../_shared");
+// @ts-ignore
+var ssm_min_js_1 = tslib_1.__importDefault(require("simplestatemanager/dist/ssm.min.js"));
+var breakpointKeys = Object.keys(_shared_1.Breakpoints);
+var ResponsiveManager = /** @class */ (function () {
+    function ResponsiveManager() {
+    }
+    /** Binds breakpoints */
+    ResponsiveManager.prototype.initialize = function (breakpoints) {
+        var _this = this;
+        if (breakpoints === void 0) { breakpoints = _shared_1.Breakpoints; }
+        this.destroy();
+        breakpointKeys.map(function (key) { return ssm_min_js_1.default.addState({
+            id: key,
+            query: breakpoints[key],
+            onEnter: function () {
+                var _a;
+                _this.activeBreakpoints = tslib_1.__assign(tslib_1.__assign({}, _this.activeBreakpoints), (_a = {}, _a[key] = true, _a));
+                mithril_1.default.redraw();
+            },
+            onLeave: function () {
+                var _a;
+                _this.activeBreakpoints = tslib_1.__assign(tslib_1.__assign({}, _this.activeBreakpoints), (_a = {}, _a[key] = false, _a));
+                mithril_1.default.redraw();
+            }
+        }); });
+    };
+    /** Checks if current breakpoint string is active */
+    ResponsiveManager.prototype.is = function (key) {
+        return this.activeBreakpoints[key] === true;
+    };
+    /** Unbinds all breakpoints */
+    ResponsiveManager.prototype.destroy = function () {
+        ssm_min_js_1.default.removeStates(breakpointKeys);
+    };
+    return ResponsiveManager;
+}());
+exports.default = new ResponsiveManager();

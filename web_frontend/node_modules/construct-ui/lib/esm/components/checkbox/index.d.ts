@@ -1,0 +1,15 @@
+import m from 'mithril';
+import { IControlAttrs } from '../base-control';
+export interface ICheckboxAttrs extends IControlAttrs {
+    /** Initially sets control to indeterminate state (uncontrolled mode)  */
+    defaultIndeterminate?: boolean;
+    /** Toggles indeterminate state */
+    indeterminate?: boolean;
+}
+export declare class Checkbox implements m.Component<ICheckboxAttrs> {
+    private input;
+    oncreate({ attrs, dom }: m.VnodeDOM<ICheckboxAttrs>): void;
+    onupdate({ attrs, dom }: m.VnodeDOM<ICheckboxAttrs>): void;
+    view({ attrs }: m.Vnode<ICheckboxAttrs>): m.Vnode<IControlAttrs, unknown>;
+    private updateIndeterminate;
+}

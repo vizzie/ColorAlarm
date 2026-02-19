@@ -1,0 +1,15 @@
+import m from 'mithril';
+import { IButtonAttrs } from '../button';
+import { IPopoverMenuAttrs } from '../popover-menu';
+export interface IMenuItemAttrs extends IButtonAttrs {
+    /** Submenu (Menu component) */
+    submenu?: m.Children;
+    /** Close submenu on child item click */
+    closeOnSubmenuClick?: boolean;
+    /** Attrs passed through to Popover (if submenu exists) */
+    popoverMenuAttrs?: Partial<IPopoverMenuAttrs>;
+    [htmlAttrs: string]: any;
+}
+export declare class MenuItem implements m.Component<IMenuItemAttrs> {
+    view({ attrs }: m.Vnode<IMenuItemAttrs>): m.Vnode<IButtonAttrs, unknown> | m.Vnode<IPopoverMenuAttrs, unknown>;
+}

@@ -1,7 +1,9 @@
 #pragma once
+
 #include <stdbool.h>
 #include <stdint.h>
-#include "driver/adc.h"
+
+#include "esp_adc/adc_oneshot.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,13 +13,13 @@ typedef void (*pot_cb_t)(uint16_t raw, uint8_t percent, void *user);
 
 /**
  * Initialize potentiometer sampling on ADC1.
- * @param channel     ADC1 channel (e.g., ADC1_CHANNEL_6 for GPIO34)
+ * @param channel     ADC channel on ADC unit 1 (e.g., ADC_CHANNEL_6 for GPIO34)
  * @param sample_ms   Poll period (e.g., 50 ms)
  * @param cb          Optional callback on significant change (may be NULL)
  * @param user        Opaque pointer passed to cb
  * @return true on success
  */
-bool pot_manager_init(adc1_channel_t channel, uint32_t sample_ms,
+bool pot_manager_init(adc_channel_t channel, uint32_t sample_ms,
                       pot_cb_t cb, void *user);
 
 /** Get last filtered raw (0..4095) */

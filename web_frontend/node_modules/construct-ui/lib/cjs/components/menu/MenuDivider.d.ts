@@ -1,0 +1,4 @@
+import m from 'mithril';
+export declare class MenuDivider implements m.Component {
+    view(): m.Vnode<any, any>;
+}

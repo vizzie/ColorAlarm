@@ -1,0 +1,36 @@
+import { __assign } from "tslib";
+var AbstractComponent = /** @class */ (function () {
+    function AbstractComponent() {
+        var _this = this;
+        this.timeoutStack = [];
+        this.attrs = {};
+        this.setTimeout = function (callback, timeout) {
+            var handle = window.setTimeout(callback, timeout);
+            _this.timeoutStack.push(handle);
+            return function () { return window.clearTimeout(handle); };
+        };
+        this.clearTimeouts = function () {
+            if (_this.timeoutStack.length) {
+                _this.timeoutStack.map(function (timeout) { return clearTimeout(timeout); });
+                _this.timeoutStack = [];
+            }
+        };
+    }
+    AbstractComponent.prototype.oninit = function (vnode) {
+        vnode.attrs = vnode.attrs || {};
+        this.setAttrs(vnode);
+    };
+    AbstractComponent.prototype.onbeforeupdate = function (vnode, prev) {
+        this.setAttrs(vnode);
+        this.prevAttrs = prev.attrs;
+    };
+    AbstractComponent.prototype.setAttrs = function (vnode) {
+        vnode.attrs = this.getAttrs(vnode.attrs);
+        this.attrs = vnode.attrs;
+    };
+    AbstractComponent.prototype.getAttrs = function (attrs) {
+        return __assign(__assign({}, this.getDefaultAttrs()), attrs);
+    };
+    return AbstractComponent;
+}());
+export { AbstractComponent };

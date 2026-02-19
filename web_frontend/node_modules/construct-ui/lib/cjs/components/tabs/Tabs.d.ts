@@ -1,0 +1,17 @@
+import m from 'mithril';
+import { ISizeAttrs, IAttrs, Align } from '../../_shared';
+export interface ITabsAttrs extends IAttrs, ISizeAttrs {
+    /**
+     * Content alignment; Used to align tabs when fluid=true
+     * @default 'center'
+     */
+    align?: Align;
+    /** Toggles bottom border */
+    bordered?: boolean;
+    /** Fills width of parent container */
+    fluid?: boolean;
+    [htmlAttrs: string]: any;
+}
+export declare class Tabs implements m.ClassComponent<ITabsAttrs> {
+    view({ attrs, children }: m.Vnode<ITabsAttrs>): m.Vnode<any, any>;
+}

@@ -1,0 +1,29 @@
+import m from 'mithril';
+import { AbstractComponent } from '../abstract-component';
+import { IAttrs } from '../../_shared';
+import { IOverlayableAttrs } from '../overlay';
+export interface IDialogAttrs extends IOverlayableAttrs, IAttrs {
+    /** Toggles basic styling (no header/footer border and background) */
+    basic?: boolean;
+    /**
+     * Wether closed button is present in header
+     * @default true
+     */
+    hasCloseButton?: boolean;
+    /** Toggles visibility */
+    isOpen?: boolean;
+    /** Title of dialog */
+    title?: string;
+    /** Inner content */
+    content?: m.Children;
+    /** Footer content */
+    footer?: m.Children;
+}
+export declare class Dialog extends AbstractComponent<IDialogAttrs> {
+    getDefaultAttrs(): {
+        hasCloseButton: boolean;
+        closeOnOutsideClick: boolean;
+    };
+    view(): m.Vnode<import("../overlay").IOverlayAttrs, unknown>;
+    private handleContainerClick;
+}

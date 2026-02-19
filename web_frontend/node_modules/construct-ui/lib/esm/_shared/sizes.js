@@ -1,0 +1,7 @@
+export var Size = {
+    XS: 'xs',
+    SM: 'sm',
+    DEFAULT: 'default',
+    LG: 'lg',
+    XL: 'xl'
+};

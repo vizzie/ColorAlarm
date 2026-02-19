@@ -1,0 +1,13 @@
+{
+  "name": "simplestatemanager",
+  "version": "3.3.0",
+  "main": "src/ssm.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "devDependencies": {
+    "jquery": "~1.10.2"
+  }
+}

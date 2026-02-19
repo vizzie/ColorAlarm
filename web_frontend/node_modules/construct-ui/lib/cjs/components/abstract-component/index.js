@@ -1,0 +1,39 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AbstractComponent = void 0;
+var tslib_1 = require("tslib");
+var AbstractComponent = /** @class */ (function () {
+    function AbstractComponent() {
+        var _this = this;
+        this.timeoutStack = [];
+        this.attrs = {};
+        this.setTimeout = function (callback, timeout) {
+            var handle = window.setTimeout(callback, timeout);
+            _this.timeoutStack.push(handle);
+            return function () { return window.clearTimeout(handle); };
+        };
+        this.clearTimeouts = function () {
+            if (_this.timeoutStack.length) {
+                _this.timeoutStack.map(function (timeout) { return clearTimeout(timeout); });
+                _this.timeoutStack = [];
+            }
+        };
+    }
+    AbstractComponent.prototype.oninit = function (vnode) {
+        vnode.attrs = vnode.attrs || {};
+        this.setAttrs(vnode);
+    };
+    AbstractComponent.prototype.onbeforeupdate = function (vnode, prev) {
+        this.setAttrs(vnode);
+        this.prevAttrs = prev.attrs;
+    };
+    AbstractComponent.prototype.setAttrs = function (vnode) {
+        vnode.attrs = this.getAttrs(vnode.attrs);
+        this.attrs = vnode.attrs;
+    };
+    AbstractComponent.prototype.getAttrs = function (attrs) {
+        return tslib_1.__assign(tslib_1.__assign({}, this.getDefaultAttrs()), attrs);
+    };
+    return AbstractComponent;
+}());
+exports.AbstractComponent = AbstractComponent;

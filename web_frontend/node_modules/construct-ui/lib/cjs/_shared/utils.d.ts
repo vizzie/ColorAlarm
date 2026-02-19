@@ -1,0 +1,11 @@
+import m from 'mithril';
+import { Style } from '.';
+export declare function isFunction(value: any): value is Function;
+export declare function safeCall(func: any, ...args: any[]): any;
+export declare function getClosest(el: any, selector: string): HTMLElement | null;
+export declare function getScrollbarWidth(): number;
+export declare function hasScrollbar(el: HTMLElement): boolean;
+export declare function elementIsOrContains(element: HTMLElement, testElement: HTMLElement): boolean;
+export declare function normalizeStyle(style?: Style): Object | undefined;
+export declare function updateElementGroupPadding(containerEl: HTMLElement, contentLeft?: m.Vnode<any, any>, contentRight?: m.Vnode<any, any>): void;
+export declare function isNullOrEmpty(item: any): boolean;

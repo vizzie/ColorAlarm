@@ -1,0 +1,8 @@
+export declare const Intent: {
+    NONE: "none";
+    PRIMARY: "primary";
+    NEGATIVE: "negative";
+    POSITIVE: "positive";
+    WARNING: "warning";
+};
+export declare type Intent = typeof Intent[keyof typeof Intent];

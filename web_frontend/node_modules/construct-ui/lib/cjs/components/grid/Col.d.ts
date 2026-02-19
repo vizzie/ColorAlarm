@@ -1,0 +1,15 @@
+import m from 'mithril';
+import { IAttrs } from '../../_shared';
+import { IBreakpointMap } from './Grid';
+export interface IColAttrs extends IAttrs {
+    /** Width of column; between 1-12 */
+    span?: number | IBreakpointMap;
+    /** Column order */
+    order?: number | IBreakpointMap;
+    /** Column offset */
+    offset?: number | IBreakpointMap;
+    [htmlAttrs: string]: any;
+}
+export declare class Col implements m.Component<IColAttrs> {
+    view({ attrs, children }: m.Vnode<IColAttrs>): m.Vnode<any, any>;
+}

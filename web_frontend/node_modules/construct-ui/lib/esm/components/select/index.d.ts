@@ -1,0 +1,33 @@
+import m from 'mithril';
+import { IAttrs, ISizeAttrs, IIntentAttrs, Option } from '../../_shared';
+export interface ISelectAttrs extends IAttrs, ISizeAttrs, IIntentAttrs {
+    /** Toggles basic styling (no borders/background) */
+    basic?: boolean;
+    /** Left-justified content */
+    contentLeft?: m.Vnode<any, any>;
+    /** Right-justified content */
+    contentRight?: m.Vnode<any, any>;
+    /** Disables selection */
+    disabled?: boolean;
+    /** Initially selected value (uncontrolled mode) */
+    defaultValue?: string;
+    /** Array of list options */
+    options?: Option[];
+    /** Fills width of parent container */
+    fluid?: boolean;
+    /**
+     * Callback invoked when selection changes.
+     * The selected value can be accessed through <code>e.currentTarget.value</code>
+     */
+    onchange?: (e: Event) => void;
+    /** Value of the selected option */
+    value?: string;
+    [htmlAttrs: string]: any;
+}
+export declare class Select implements m.Component<ISelectAttrs> {
+    oncreate(vnode: m.VnodeDOM<ISelectAttrs>): void;
+    onupdate(vnode: m.VnodeDOM<ISelectAttrs>): void;
+    view({ attrs }: m.Vnode<ISelectAttrs>): m.Vnode<any, any>;
+    private renderOption;
+    private updatePadding;
+}

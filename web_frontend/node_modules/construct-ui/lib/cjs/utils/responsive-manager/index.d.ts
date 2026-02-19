@@ -1,0 +1,13 @@
+import { Breakpoints } from '../../_shared';
+declare class ResponsiveManager {
+    /** Key value of active breakpoints */
+    activeBreakpoints: Record<keyof typeof Breakpoints, boolean>;
+    /** Binds breakpoints */
+    initialize(breakpoints?: Record<keyof typeof Breakpoints, string>): void;
+    /** Checks if current breakpoint string is active */
+    is(key: keyof typeof Breakpoints): boolean;
+    /** Unbinds all breakpoints */
+    destroy(): void;
+}
+declare const _default: ResponsiveManager;
+export default _default;

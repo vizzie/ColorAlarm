@@ -1,0 +1,16 @@
+import { __assign, __rest } from "tslib";
+import m from 'mithril';
+import classnames from 'classnames';
+import { Classes } from '../../_shared';
+var Tree = /** @class */ (function () {
+    function Tree() {
+    }
+    Tree.prototype.view = function (_a) {
+        var attrs = _a.attrs;
+        var nodes = attrs.nodes, className = attrs.class, htmlAttrs = __rest(attrs, ["nodes", "class"]);
+        var treeClasses = classnames(Classes.TREE, className);
+        return m('ul', __assign(__assign({}, htmlAttrs), { class: treeClasses }), nodes);
+    };
+    return Tree;
+}());
+export { Tree };

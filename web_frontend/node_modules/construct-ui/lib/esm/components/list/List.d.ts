@@ -1,0 +1,10 @@
+import m from 'mithril';
+import { IAttrs, ISizeAttrs } from '../../_shared';
+export interface IListAttrs extends IAttrs, ISizeAttrs {
+    /** Wether to show background on item hover */
+    interactive?: boolean;
+    [htmlAttrs: string]: any;
+}
+export declare class List implements m.Component<IListAttrs> {
+    view({ attrs, children }: m.Vnode<IListAttrs>): m.Vnode<any, any>;
+}

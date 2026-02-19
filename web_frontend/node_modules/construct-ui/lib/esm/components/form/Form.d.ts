@@ -1,0 +1,9 @@
+import m from 'mithril';
+import { IAttrs } from '../../_shared';
+import { IGridAttrs } from '../grid';
+export interface IFormAttrs extends IAttrs, IGridAttrs {
+    [htmlAttrs: string]: any;
+}
+export declare class Form implements m.Component<IFormAttrs> {
+    view({ attrs, children }: m.Vnode<IFormAttrs>): m.Vnode<IGridAttrs, unknown>;
+}

@@ -1,0 +1,16 @@
+import m from 'mithril';
+import { IAttrs, ISizeAttrs, IIntentAttrs } from '../../_shared';
+export interface IButtonGroupAttrs extends IAttrs, ISizeAttrs, IIntentAttrs {
+    /** Toggles basic styling on children (no borders/background) */
+    basic?: boolean;
+    /** Adds rounded styling (no borders/background) */
+    rounded?: boolean;
+    /** Toggles outline styling on children (no background) */
+    outlined?: boolean;
+    /** Fills width of parent container */
+    fluid?: boolean;
+    [htmlAttrs: string]: any;
+}
+export declare class ButtonGroup implements m.Component<IButtonGroupAttrs> {
+    view({ attrs, children }: m.Vnode<IButtonGroupAttrs>): m.Vnode<any, any>;
+}

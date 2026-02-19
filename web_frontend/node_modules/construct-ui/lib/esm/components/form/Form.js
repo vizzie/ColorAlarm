@@ -1,0 +1,16 @@
+import { __assign } from "tslib";
+import m from 'mithril';
+import classnames from 'classnames';
+import { Classes } from '../../_shared';
+import { Grid } from '../grid';
+var Form = /** @class */ (function () {
+    function Form() {
+    }
+    Form.prototype.view = function (_a) {
+        var attrs = _a.attrs, children = _a.children;
+        var classes = classnames(Classes.FORM, attrs.class);
+        return m(Grid, __assign(__assign({}, attrs), { element: 'form', class: classes }), children);
+    };
+    return Form;
+}());
+export { Form };

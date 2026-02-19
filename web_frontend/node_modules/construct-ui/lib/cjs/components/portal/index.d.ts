@@ -1,0 +1,18 @@
+import m from 'mithril';
+import { IAttrs } from '../../_shared';
+export interface IPortalAttrs extends IAttrs {
+    /** Callback invoked when the component is mounted */
+    onContentMount?: (rootElement: HTMLElement) => void;
+    /** Optional HTML element to mount to */
+    container?: HTMLElement;
+}
+export declare class Portal implements m.Component<IPortalAttrs> {
+    private rootElement;
+    private content;
+    oncreate({ attrs, children }: m.Vnode<IPortalAttrs>): void;
+    onupdate({ attrs }: m.Vnode<IPortalAttrs>): void;
+    onbeforeupdate({ children }: m.Vnode<IPortalAttrs>): false | undefined;
+    onremove({ attrs }: m.Vnode<IPortalAttrs>): void;
+    view(): m.Vnode<any, any>;
+    private setStyles;
+}

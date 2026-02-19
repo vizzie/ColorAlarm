@@ -1,0 +1,6 @@
+export declare const Align: {
+    LEFT: "left";
+    CENTER: "center";
+    RIGHT: "right";
+};
+export declare type Align = typeof Align[keyof typeof Align];

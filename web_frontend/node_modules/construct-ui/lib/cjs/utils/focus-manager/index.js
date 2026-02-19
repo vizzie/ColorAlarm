@@ -1,0 +1,30 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var _shared_1 = require("../../_shared");
+var FocusManager = /** @class */ (function () {
+    function FocusManager() {
+        this.handleMouseDown = function () {
+            document.body.classList.add(_shared_1.Classes.FOCUS_DISABLED);
+        };
+        this.handleKeyDown = function (e) {
+            if (e.which === _shared_1.Keys.TAB) {
+                document.body.classList.remove(_shared_1.Classes.FOCUS_DISABLED);
+            }
+        };
+    }
+    /** Focus outline is shown only when tabbing through elements */
+    FocusManager.prototype.showFocusOnlyOnTab = function () {
+        var body = document.body;
+        body.addEventListener('mousedown', this.handleMouseDown);
+        body.addEventListener('keydown', this.handleKeyDown);
+    };
+    /** Focus outline is always shown (mouse click and tab) */
+    FocusManager.prototype.alwaysShowFocus = function () {
+        var body = document.body;
+        body.removeEventListener('mousedown', this.handleMouseDown);
+        body.removeEventListener('keydown', this.handleKeyDown);
+        body.classList.remove(_shared_1.Classes.FOCUS_DISABLED);
+    };
+    return FocusManager;
+}());
+exports.default = new FocusManager();

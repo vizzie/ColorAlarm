@@ -1,0 +1,48 @@
+import m from 'mithril';
+import classnames from 'classnames';
+import { Classes, safeCall, normalizeStyle } from '../../_shared';
+var Portal = /** @class */ (function () {
+    function Portal() {
+    }
+    Portal.prototype.oncreate = function (_a) {
+        var attrs = _a.attrs, children = _a.children;
+        var rootElement = document.createElement('div');
+        var container = attrs.container || document.body;
+        container.appendChild(rootElement);
+        this.rootElement = rootElement;
+        this.setStyles(attrs);
+        this.content = { view: function () { return children; } };
+        m.mount(this.rootElement, this.content);
+        safeCall(attrs.onContentMount, rootElement);
+    };
+    Portal.prototype.onupdate = function (_a) {
+        var attrs = _a.attrs;
+        this.setStyles(attrs);
+    };
+    Portal.prototype.onbeforeupdate = function (_a) {
+        var children = _a.children;
+        if (!this.content)
+            return false;
+        this.content.view = function () { return children; };
+    };
+    Portal.prototype.onremove = function (_a) {
+        var attrs = _a.attrs;
+        var container = attrs.container || document.body;
+        if (container.contains(this.rootElement)) {
+            m.mount(this.rootElement, null);
+            container.removeChild(this.rootElement);
+        }
+    };
+    Portal.prototype.view = function () {
+        return m.fragment({}, '');
+    };
+    Portal.prototype.setStyles = function (attrs) {
+        this.rootElement.className = classnames(Classes.PORTAL, attrs.class);
+        this.rootElement.style.cssText = '';
+        if (attrs.style) {
+            Object.assign(this.rootElement.style, normalizeStyle(attrs.style));
+        }
+    };
+    return Portal;
+}());
+export { Portal };

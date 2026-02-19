@@ -1,0 +1,5 @@
+import m from 'mithril';
+import { IControlAttrs } from '../base-control';
+export declare class Switch implements m.Component<IControlAttrs> {
+    view({ attrs }: m.Vnode<IControlAttrs>): m.Vnode<IControlAttrs, unknown>;
+}

@@ -1,0 +1,28 @@
+import { Keys, Classes } from '../../_shared';
+var FocusManager = /** @class */ (function () {
+    function FocusManager() {
+        this.handleMouseDown = function () {
+            document.body.classList.add(Classes.FOCUS_DISABLED);
+        };
+        this.handleKeyDown = function (e) {
+            if (e.which === Keys.TAB) {
+                document.body.classList.remove(Classes.FOCUS_DISABLED);
+            }
+        };
+    }
+    /** Focus outline is shown only when tabbing through elements */
+    FocusManager.prototype.showFocusOnlyOnTab = function () {
+        var body = document.body;
+        body.addEventListener('mousedown', this.handleMouseDown);
+        body.addEventListener('keydown', this.handleKeyDown);
+    };
+    /** Focus outline is always shown (mouse click and tab) */
+    FocusManager.prototype.alwaysShowFocus = function () {
+        var body = document.body;
+        body.removeEventListener('mousedown', this.handleMouseDown);
+        body.removeEventListener('keydown', this.handleKeyDown);
+        body.classList.remove(Classes.FOCUS_DISABLED);
+    };
+    return FocusManager;
+}());
+export default new FocusManager();

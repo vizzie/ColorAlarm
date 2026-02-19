@@ -2,6 +2,8 @@
 #include "neopixel_driver.h"
 #include "driver/rmt.h"
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -41,8 +43,38 @@ typedef struct {
 } neopixel_rmt_t;
 
 static neopixel_rmt_t s_rmt = {0};
+static SemaphoreHandle_t s_lock = NULL;
+
+static void lock_driver(void) {
+    if (s_lock) {
+        xSemaphoreTake(s_lock, portMAX_DELAY);
+    }
+}
+
+static void unlock_driver(void) {
+    if (s_lock) {
+        xSemaphoreGive(s_lock);
+    }
+}
+
+static void set_pixel_unlocked(neopixel_t *strip, int i, uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
+    int bpp = strip->use_rgbw ? 4 : 3;
+    uint8_t *p = &strip->pixels[i * bpp];
+    // Most strips expect GRB (and GRBW for SK6812)
+    p[0] = g;
+    p[1] = r;
+    p[2] = b;
+    if (strip->use_rgbw) {
+        p[3] = w;
+    }
+}
 
 void neopixel_init(neopixel_t *strip, int pin, int count, neopixel_order_t order) {
+    if (!s_lock) {
+        s_lock = xSemaphoreCreateMutex();
+    }
+    lock_driver();
+
     strip->pin = pin;
     strip->count = count;
     strip->order = order;
@@ -69,6 +101,7 @@ void neopixel_init(neopixel_t *strip, int pin, int count, neopixel_order_t order
     rmt_driver_install(s_rmt.channel, 0, 0);
 
     ESP_LOGI(TAG, "Init on GPIO %d, LEDs=%d, %s", pin, count, strip->use_rgbw ? "RGBW" : "RGB");
+    unlock_driver();
 }
 
 static uint8_t s_brightness_cap = 255; // default off
@@ -76,35 +109,47 @@ static inline uint8_t apply_cap(uint8_t v) {
     // v * cap / 255
     return (uint8_t)((v * (uint16_t)s_brightness_cap) / 255U);
 }
-void neopixel_set_brightness_cap(uint8_t cap) { s_brightness_cap = cap; }
-uint8_t neopixel_get_brightness_cap(void) { return s_brightness_cap; }
+void neopixel_set_brightness_cap(uint8_t cap) {
+    lock_driver();
+    s_brightness_cap = cap;
+    unlock_driver();
+}
+uint8_t neopixel_get_brightness_cap(void) {
+    lock_driver();
+    uint8_t cap = s_brightness_cap;
+    unlock_driver();
+    return cap;
+}
 
 
 void neopixel_set_pixel(neopixel_t *strip, int i, uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
     if (!strip || !strip->pixels) return;
     if (i < 0 || i >= strip->count) return;
-    int bpp = strip->use_rgbw ? 4 : 3;
-    uint8_t *p = &strip->pixels[i*bpp];
-    // Most strips expect GRB (and GRBW for SK6812)
-    p[0] = g;
-    p[1] = r;
-    p[2] = b;
-    if (strip->use_rgbw) p[3] = w;
+    lock_driver();
+    set_pixel_unlocked(strip, i, r, g, b, w);
+    unlock_driver();
 }
 
 void neopixel_fill(neopixel_t *strip, uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
     if (!strip) return;
-    for (int i=0;i<strip->count;i++) neopixel_set_pixel(strip,i,r,g,b,w);
+    lock_driver();
+    for (int i = 0; i < strip->count; i++) {
+        set_pixel_unlocked(strip, i, r, g, b, w);
+    }
+    unlock_driver();
 }
 
 void neopixel_clear(neopixel_t *strip) {
     if (!strip || !strip->pixels) return;
+    lock_driver();
     memset(strip->pixels, 0, strip->count * (strip->use_rgbw ? 4 : 3));
+    unlock_driver();
     neopixel_show(strip);
 }
 
 void neopixel_show(neopixel_t *strip) {
     if (!strip || !strip->pixels) return;
+    lock_driver();
     int bpp = strip->use_rgbw ? 4 : 3;
     const size_t nbits = strip->count * bpp * 8;
     // Allocate items: one rmt item per bit + reset tail
@@ -147,4 +192,5 @@ void neopixel_show(neopixel_t *strip) {
 
     rmt_write_items(s_rmt.channel, s_rmt.items, k, true);
     rmt_wait_tx_done(s_rmt.channel, portMAX_DELAY);
+    unlock_driver();
 }

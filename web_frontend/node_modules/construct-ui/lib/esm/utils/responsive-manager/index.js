@@ -1,0 +1,40 @@
+import { __assign } from "tslib";
+import m from 'mithril';
+import { Breakpoints } from '../../_shared';
+// @ts-ignore
+import ssm from 'simplestatemanager/dist/ssm.min.js';
+var breakpointKeys = Object.keys(Breakpoints);
+var ResponsiveManager = /** @class */ (function () {
+    function ResponsiveManager() {
+    }
+    /** Binds breakpoints */
+    ResponsiveManager.prototype.initialize = function (breakpoints) {
+        var _this = this;
+        if (breakpoints === void 0) { breakpoints = Breakpoints; }
+        this.destroy();
+        breakpointKeys.map(function (key) { return ssm.addState({
+            id: key,
+            query: breakpoints[key],
+            onEnter: function () {
+                var _a;
+                _this.activeBreakpoints = __assign(__assign({}, _this.activeBreakpoints), (_a = {}, _a[key] = true, _a));
+                m.redraw();
+            },
+            onLeave: function () {
+                var _a;
+                _this.activeBreakpoints = __assign(__assign({}, _this.activeBreakpoints), (_a = {}, _a[key] = false, _a));
+                m.redraw();
+            }
+        }); });
+    };
+    /** Checks if current breakpoint string is active */
+    ResponsiveManager.prototype.is = function (key) {
+        return this.activeBreakpoints[key] === true;
+    };
+    /** Unbinds all breakpoints */
+    ResponsiveManager.prototype.destroy = function () {
+        ssm.removeStates(breakpointKeys);
+    };
+    return ResponsiveManager;
+}());
+export default new ResponsiveManager();

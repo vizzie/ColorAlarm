@@ -1,0 +1,8 @@
+import m from 'mithril';
+import { IAttrs } from '../../_shared';
+export interface IControlGroupAttrs extends IAttrs {
+    [htmlAttrs: string]: any;
+}
+export declare class ControlGroup implements m.Component<IControlGroupAttrs> {
+    view({ attrs, children }: m.Vnode<IControlGroupAttrs>): m.Vnode<any, any>;
+}

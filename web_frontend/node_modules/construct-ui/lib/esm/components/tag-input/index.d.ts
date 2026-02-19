@@ -1,0 +1,42 @@
+import m from 'mithril';
+import { IAttrs, ISizeAttrs, IIntentAttrs } from '../../_shared';
+import { ITagAttrs } from '../tag';
+import { AbstractComponent } from '../abstract-component';
+import { IInputAttrs } from '../input';
+export interface ITagInputAttrs extends IAttrs, ISizeAttrs, IIntentAttrs {
+    /** Triggers onAdd when input loses focus  */
+    addOnBlur?: boolean;
+    /**
+     * Array of Tag components
+     * @default []
+     */
+    tags: m.Vnode<ITagAttrs, any>[];
+    /** Left-justified content */
+    contentLeft?: m.Child;
+    /** Right-justified content */
+    contentRight?: m.Child;
+    /** Disables interaction */
+    disabled?: boolean;
+    /** Fills width of parent container */
+    fluid?: boolean;
+    /**
+     * Attrs passed through to input
+     * @default {}
+     */
+    inputAttrs?: IInputAttrs;
+    /** Function invoked when new tag is added (via enter key or addOnBlur) */
+    onAdd?: (value: string, e: Event) => void;
+    [htmlAttrs: string]: any;
+}
+export declare class TagInput extends AbstractComponent<ITagInputAttrs> {
+    private isActive;
+    private inputEl;
+    getDefaultAttrs(): ITagInputAttrs;
+    oncreate({ dom }: m.VnodeDOM<ITagInputAttrs>): void;
+    view(): m.Vnode<any, any>;
+    private handleContentClick;
+    private handleInputKeyDown;
+    private handleInputFocus;
+    private handleInputBlur;
+    private handleOnAdd;
+}

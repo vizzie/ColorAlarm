@@ -1,0 +1,10 @@
+declare class TransitionManager {
+    /** Whether transitions are active */
+    isEnabled: boolean;
+    /** Enable all transitions */
+    enable(): void;
+    /** Disable all transitions */
+    disable(): boolean;
+}
+declare const _default: TransitionManager;
+export default _default;

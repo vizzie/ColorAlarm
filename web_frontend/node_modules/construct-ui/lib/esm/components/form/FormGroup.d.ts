@@ -1,0 +1,13 @@
+import m from 'mithril';
+import { IColAttrs } from '../grid';
+export interface IFormGroupAttrs extends IColAttrs {
+    /** Text label */
+    label?: string;
+    /** Inner content; can be used instead of passing children */
+    content?: m.Children;
+    /** Disables interaction */
+    disabled?: boolean;
+}
+export declare class FormGroup implements m.Component<IFormGroupAttrs> {
+    view({ attrs, children }: m.Vnode<IFormGroupAttrs>): m.Vnode<IColAttrs, unknown>;
+}
