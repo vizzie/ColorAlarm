@@ -48,3 +48,11 @@
 build
 sdkconfig
 sdkconfig.old
+
+# Generated/vendor artifacts
+**/.DS_Store
+.codex-bin/
+managed_components/
+web_frontend/node_modules/
+web_frontend/dist/
+web_frontend/.vite/
