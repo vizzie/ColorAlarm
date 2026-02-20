@@ -202,7 +202,6 @@ export const App: m.Component = {
           : m("table.table", [
               m("thead", [
                 m("tr", [
-                  m("th", "ID"),
                   m("th", "Day"),
                   m("th", "Time"),
                   m("th", "Enabled"),
@@ -213,7 +212,6 @@ export const App: m.Component = {
                 "tbody",
                 state.alarms.map((alarm) =>
                   m("tr", { key: alarm.id }, [
-                    m("td", alarm.id),
                     m("td", DAY_OPTIONS.find((d) => d.value === alarm.day)?.label ?? String(alarm.day)),
                     m("td", formatTimeInput(alarm.hour, alarm.minute)),
                     m("td", alarm.enabled ? "Yes" : "No"),
