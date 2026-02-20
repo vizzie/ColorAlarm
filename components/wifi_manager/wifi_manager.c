@@ -64,43 +64,6 @@ static bool file_exists(const char *path) {
     return (path != NULL) && (stat(path, &st) == 0) && S_ISREG(st.st_mode);
 }
 
-static bool path_ends_with(const char *path, const char *suffix) {
-    if (!path || !suffix) {
-        return false;
-    }
-    size_t path_len = strlen(path);
-    size_t suffix_len = strlen(suffix);
-    if (suffix_len > path_len) {
-        return false;
-    }
-    return strcmp(path + path_len - suffix_len, suffix) == 0;
-}
-
-static bool request_accepts_gzip(httpd_req_t *req) {
-    if (!req) {
-        return false;
-    }
-
-    size_t hdr_len = httpd_req_get_hdr_value_len(req, "Accept-Encoding");
-    if (hdr_len == 0) {
-        return false;
-    }
-
-    char *enc = calloc(1, hdr_len + 1);
-    if (!enc) {
-        return false;
-    }
-
-    bool accepts = false;
-    if (httpd_req_get_hdr_value_str(req, "Accept-Encoding", enc, hdr_len + 1) == ESP_OK &&
-        strstr(enc, "gzip") != NULL) {
-        accepts = true;
-    }
-
-    free(enc);
-    return accepts;
-}
-
 static bool file_has_extension(const char *path) {
     if (!path) {
         return false;
@@ -132,10 +95,6 @@ static esp_err_t send_file_response(httpd_req_t *req, const char *path) {
     }
 
     httpd_resp_set_type(req, mime_type_from_path(path));
-    if (path_ends_with(path, ".gz")) {
-        httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
-        httpd_resp_set_hdr(req, "Vary", "Accept-Encoding");
-    }
 
     char buf[1024];
     size_t read_sz = 0;
@@ -399,9 +358,6 @@ static bool get_alarm_id_from_uri(const httpd_req_t *req, char *out_id, size_t o
 
 static esp_err_t root_get_handler(httpd_req_t *req) {
     if (s_connected && s_web_fs_ready) {
-        if (request_accepts_gzip(req) && file_exists(WEB_BASE_PATH "/index.html.gz")) {
-            return send_file_response(req, WEB_BASE_PATH "/index.html.gz");
-        }
         return send_file_response(req, WEB_BASE_PATH "/index.html");
     }
 
@@ -450,23 +406,11 @@ static esp_err_t static_get_handler(httpd_req_t *req) {
         snprintf(full_path, sizeof(full_path), WEB_BASE_PATH "%s", clean_uri);
     }
 
-    bool accepts_gzip = request_accepts_gzip(req);
-    if (!path_ends_with(full_path, ".gz")) {
-        char gzip_path[sizeof(full_path) + 4] = {0};
-        snprintf(gzip_path, sizeof(gzip_path), "%s.gz", full_path);
-        if (file_exists(gzip_path) && accepts_gzip) {
-            return send_file_response(req, gzip_path);
-        }
-    }
-
     if (file_exists(full_path)) {
         return send_file_response(req, full_path);
     }
 
     if (!file_has_extension(clean_uri)) {
-        if (accepts_gzip && file_exists(WEB_BASE_PATH "/index.html.gz")) {
-            return send_file_response(req, WEB_BASE_PATH "/index.html.gz");
-        }
         return send_file_response(req, WEB_BASE_PATH "/index.html");
     }
 

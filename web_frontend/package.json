@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:mock": "sh -c 'npm run mock & npm run dev'",
-    "build": "vite build && node ./scripts/inline-dist-css.mjs && node ./scripts/gzip-dist-assets.mjs",
+    "build": "vite build && node ./scripts/inline-dist-css.mjs",
     "preview": "vite preview",
     "mock": "node ./mock-server/server.js"
   },
